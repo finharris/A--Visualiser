@@ -143,6 +143,8 @@ class Grid {
   }
 
   aStarPathfind(speed) {
+    speed = speed ? speed : 100;
+
     this.isNew = false;
 
     let open = [this.getNodeFromGrid(this.startpoint.x, this.startpoint.y)];
@@ -152,7 +154,7 @@ class Grid {
       let current = open[0];
 
       if (!current) {
-        console.log('not found');
+        alert('Not Found');
         clearInterval(loop);
         return;
       }
@@ -231,7 +233,6 @@ class Grid {
             break;
           }
         }
-        console.log(finalPath);
         clearInterval(loop);
       }
       this.renderGrid();
@@ -256,26 +257,36 @@ class Grid {
 let testGrid = new Grid(10, 10, { x: 2, y: 9 }, { x: 9, y: 2 });
 
 const speedInput = document.querySelector('.inputSpeed');
-const startInput = document.querySelector('.startInput');
-const endInput = document.querySelector('.endInput');
+
+const startInputX = document.querySelector('.startInputX');
+const startInputY = document.querySelector('.startInputY');
+const endInputX = document.querySelector('.endInputX');
+const endInputY = document.querySelector('.endInputY');
+
 const startButton = document.querySelector('.startButton');
 const clearButton = document.querySelector('.clearButton');
 
+function spawnGrid(doStart) {
+  let startX = startInputX.value ? parseInt(startInputX.value) : 2;
+  let startY = startInputY.value ? parseInt(startInputY.value) : 9;
+  let endX = endInputX.value ? parseInt(endInputX.value) : 9;
+  let endY = endInputY.value ? parseInt(endInputY.value) : 2;
+
+  if (!testGrid.isNew) {
+    testGrid = new Grid(10, 10, { x: startX, y: startY }, { x: endX, y: endY });
+  }
+
+  if (!doStart) {
+    testGrid = new Grid(10, 10, { x: startX, y: startY }, { x: endX, y: endY });
+  }
+
+  doStart ? testGrid.aStarPathfind(speedInput.value) : pass;
+}
+
 clearButton.addEventListener('click', () => {
-  testGrid = new Grid(10, 10, { x: 2, y: 9 }, { x: 9, y: 2 });
+  spawnGrid();
 });
 
 startButton.addEventListener('click', () => {
-  let startPoint = startInput.value.split(',');
-  let endPoint = endInput.value.split(',');
-
-  if (!testGrid.isNew) {
-    testGrid = new Grid(
-      10,
-      10,
-      { x: parseInt(startPoint[0]), y: parseInt(startPoint[1]) },
-      { x: parseInt(endPoint[0]), y: parseInt(endPoint[1]) }
-    );
-  }
-  testGrid.aStarPathfind(speedInput.value);
+  spawnGrid(true);
 });
